@@ -1,8 +1,9 @@
+import tkinter
 from tkinter import *
 
 
 def open_window():
-    window = Tk()
+    window = tkinter.Toplevel()
 
     window.geometry('700x600')
     window.title('Welcome to Liverpool FC Fan Shop')

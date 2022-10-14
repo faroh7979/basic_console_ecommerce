@@ -1,5 +1,6 @@
-from json import loads
+from json import loads, dump
 
+from basic_console_ecommerce.shop_logic import shop_display
 from cleaner import clean_frame
 from window_settings import *
 
@@ -50,16 +51,12 @@ def register():
         fg='white',
         height=3,
         width=6,
-        command=registration
+        command=registration_process
     )
     frame.create_window(250, 175, window=reg_button)
 
 
-def login():
-    clean_frame()
-
-
-def registration():
+def registration_process():
     register_dict = {
         'first_name': first_name_box.get(),
         'last_name': last_name_box.get(),
@@ -69,7 +66,11 @@ def registration():
     }
 
     if check_validity_of_reg_details(register_dict):
-        pass
+        with open('./data_base/data_base.json', 'a') as db_file:
+            dump(register_dict, db_file)
+            db_file.write('\n')
+
+        shop_display()
 
 
 def check_validity_of_reg_details(reg_dict):
@@ -92,16 +93,83 @@ def check_validity_of_reg_details(reg_dict):
             db_usernames.append(loads(line))
 
     for list_i in range(len(db_usernames)):
-        print(db_usernames[list_i]["username"])
-        if db_usernames[list_i]['username'] == reg_dict['username']:
+
+        if db_usernames[list_i]['user_name'] == reg_dict['user_name']:
             frame.create_text(
                 300,
                 300,
                 text='This username is already exist',
-                fill='red')
+                fill='red',
+                tags='error'
+            )
+
+            return False
+
+        frame.delete('error')
+
+        return True
 
 
+def login():
+    clean_frame()
+
+    frame.create_text(100, 50, text='Your username:')
+    frame.create_text(100, 75, text='Your password:')
+
+    frame.create_window(225, 50, window=login_user_name)
+    frame.create_window(225, 75, window=login_user_password)
+
+    login_button = Button(
+        window_opener,
+        text='Login',
+        bg='blue',
+        fg='white',
+        height=3,
+        width=6,
+        command=login_process
+    )
+    frame.create_window(250, 175, window=login_button)
+
+
+def login_process():
+
+    if check_validity_of_login_details():
+        shop_display()
+
+    else:
+        frame.create_text(
+            175,
+            200,
+            text='Your username or password is incorrect. Please, try again',
+            fill='red'
+        )
+
+
+def check_validity_of_login_details():
+    login_details_db = []
+    with open('./data_base/data_base.json', 'r') as data_base_read:
+        for line in data_base_read:
+            login_details_db.append(loads(line))
+
+    if not login_details_db:
+        return True
+
+    for current_i in range(len(login_details_db)):
+        user_name = login_details_db[current_i]['user_name']
+        password = login_details_db[current_i]['password']
+
+        if user_name == login_user_name.get() and password == login_user_password.get():
+            return True
+
+    return False
+
+
+# registration entries
 first_name_box = Entry(window_opener, bd=0)
 last_name_box = Entry(window_opener, bd=0)
 user_name_box = Entry(window_opener, bd=0)
 password_box = Entry(window_opener, bd=0, show="*")
+
+# login entries
+login_user_name = Entry(window_opener, bd=0)
+login_user_password = Entry(window_opener, bd=0, show='*')
