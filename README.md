@@ -6,4 +6,4 @@ Should fix the following:
 - now use top screen in order to be able to show the png files, should search for some fix
 - for every purchase do not clear the in stock quantity for the selected product. Overwrite it!
 
-<img src="ecommerce.png" alt="Italian Trulli">
+<img src="fan_items_images/ecommerce.png" alt="Italian Trulli">
